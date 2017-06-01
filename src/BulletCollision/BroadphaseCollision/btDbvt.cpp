@@ -38,9 +38,8 @@ static DBVT_INLINE btDbvtVolume	merge(	const btDbvtVolume& a,
 									  const btDbvtVolume& b)
 {
 #if (DBVT_MERGE_IMPL==DBVT_IMPL_SSE)
-	ATTRIBUTE_ALIGNED16( char locals[sizeof(btDbvtAabbMm)]);
-	btDbvtVolume* ptr = (btDbvtVolume*) locals;
-	btDbvtVolume&	res=*ptr;
+	ATTRIBUTE_ALIGNED16(char locals[sizeof(btDbvtAabbMm)]);
+	btDbvtVolume&	res=*(btDbvtVolume*)locals;
 #else
 		btDbvtVolume	res;
 #endif
@@ -183,7 +182,7 @@ static btDbvtNode*				removeleaf(	btDbvt* pdbvt,
 	{
 		btDbvtNode*	parent=leaf->parent;
 		btDbvtNode*	prev=parent->parent;
-		btDbvtNode*	sibling=parent->childs[1-indexof(leaf)];			
+		btDbvtNode*	sibling=parent->childs[1-indexof(leaf)];
 		if(prev)
 		{
 			prev->childs[indexof(parent)]=sibling;
@@ -201,12 +200,12 @@ static btDbvtNode*				removeleaf(	btDbvt* pdbvt,
 			return(prev?prev:pdbvt->m_root);
 		}
 		else
-		{								
+		{
 			pdbvt->m_root=sibling;
 			sibling->parent=0;
 			deletenode(pdbvt,parent);
 			return(pdbvt->m_root);
-		}			
+		}
 	}
 }
 
@@ -251,8 +250,7 @@ static btDbvtVolume				bounds(	const tNodeArray& leaves)
 {
 #if DBVT_MERGE_IMPL==DBVT_IMPL_SSE
 	ATTRIBUTE_ALIGNED16(char	locals[sizeof(btDbvtVolume)]);
-	btDbvtVolume* ptr = (btDbvtVolume*) locals;
-	btDbvtVolume&	volume=*ptr;
+	btDbvtVolume&	volume=*(btDbvtVolume*)locals;
 	volume=leaves[0]->volume;
 #else
 	btDbvtVolume volume=leaves[0]->volume;
@@ -426,14 +424,14 @@ btDbvt::~btDbvt()
 //
 void			btDbvt::clear()
 {
-	if(m_root)	
+	if(m_root)
 		recursedeletenode(this,m_root);
 	btAlignedFree(m_free);
 	m_free=0;
 	m_lkhd		=	-1;
 	m_stkStack.clear();
 	m_opath		=	0;
-	
+
 }
 
 //
@@ -582,7 +580,7 @@ void			btDbvt::write(IWriter* iwriter) const
 		else
 		{
 			iwriter->WriteLeaf(n,i,p);
-		}	
+		}
 	}
 }
 
@@ -591,7 +589,7 @@ void			btDbvt::clone(btDbvt& dest,IClone* iclone) const
 {
 	dest.clear();
 	if(m_root!=0)
-	{	
+	{
 		btAlignedObjectArray<sStkCLN>	stack;
 		stack.reserve(m_leaves);
 		stack.push_back(sStkCLN(m_root,0));
@@ -645,7 +643,7 @@ void			btDbvt::extractLeaves(const btDbvtNode* node,btAlignedObjectArray<const b
 	else
 	{
 		leaves.push_back(node);
-	}	
+	}
 }
 
 //
@@ -754,22 +752,22 @@ struct btDbvtBenchmark
 	{
 		return(rand()/(btScalar)RAND_MAX);
 	}
-	static btVector3		RandVector3()
+	static btVector3		RandbtVector3()
 	{
 		return(btVector3(RandUnit(),RandUnit(),RandUnit()));
 	}
-	static btVector3		RandVector3(btScalar cs)
+	static btVector3		RandbtVector3(btScalar cs)
 	{
-		return(RandVector3()*cs-btVector3(cs,cs,cs)/2);
+		return(RandbtVector3()*cs-btVector3(cs,cs,cs)/2);
 	}
 	static btDbvtVolume	RandVolume(btScalar cs,btScalar eb,btScalar es)
 	{
-		return(btDbvtVolume::FromCE(RandVector3(cs),btVector3(eb,eb,eb)+RandVector3()*es));
+		return(btDbvtVolume::FromCE(RandbtVector3(cs),btVector3(eb,eb,eb)+RandbtVector3()*es));
 	}
 	static btTransform		RandTransform(btScalar cs)
 	{
 		btTransform	t;
-		t.setOrigin(RandVector3(cs));
+		t.setOrigin(RandbtVector3(cs));
 		t.setRotation(btQuaternion(RandUnit()*SIMD_PI*2,RandUnit()*SIMD_PI*2,RandUnit()*SIMD_PI*2).normalized());
 		return(t);
 	}
@@ -878,7 +876,7 @@ void			btDbvt::benchmark()
 	printf("\tsizeof(btDbvtVolume): %u bytes\r\n",sizeof(btDbvtVolume));
 	printf("\tsizeof(btDbvtNode):   %u bytes\r\n",sizeof(btDbvtNode));
 	if(cfgBenchmark1_Enable)
-	{// Benchmark 1	
+	{// Benchmark 1
 		srand(380843);
 		btAlignedObjectArray<btDbvtVolume>	volumes;
 		btAlignedObjectArray<bool>			results;
@@ -904,7 +902,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%)\r\n",time,(time-cfgBenchmark1_Reference)*100/time);
 	}
 	if(cfgBenchmark2_Enable)
-	{// Benchmark 2	
+	{// Benchmark 2
 		srand(380843);
 		btAlignedObjectArray<btDbvtVolume>	volumes;
 		btAlignedObjectArray<btDbvtVolume>	results;
@@ -930,7 +928,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%)\r\n",time,(time-cfgBenchmark2_Reference)*100/time);
 	}
 	if(cfgBenchmark3_Enable)
-	{// Benchmark 3	
+	{// Benchmark 3
 		srand(380843);
 		btDbvt						dbvt[2];
 		btDbvtBenchmark::NilPolicy	policy;
@@ -964,7 +962,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%)\r\n",time,(time-cfgBenchmark4_Reference)*100/time);
 	}
 	if(cfgBenchmark5_Enable)
-	{// Benchmark 5	
+	{// Benchmark 5
 		srand(380843);
 		btDbvt								dbvt[2];
 		btAlignedObjectArray<btTransform>	transforms;
@@ -988,7 +986,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%)\r\n",time,(time-cfgBenchmark5_Reference)*100/time);
 	}
 	if(cfgBenchmark6_Enable)
-	{// Benchmark 6	
+	{// Benchmark 6
 		srand(380843);
 		btDbvt								dbvt;
 		btAlignedObjectArray<btTransform>	transforms;
@@ -1004,13 +1002,13 @@ void			btDbvt::benchmark()
 		wallclock.reset();
 		for(int i=0;i<cfgBenchmark6_Iterations;++i)
 		{
-			btDbvt::collideTT(dbvt.m_root,dbvt.m_root,transforms[i],policy);		
+			btDbvt::collideTT(dbvt.m_root,dbvt.m_root,transforms[i],policy);
 		}
 		const int time=(int)wallclock.getTimeMilliseconds();
 		printf("%u ms (%i%%)\r\n",time,(time-cfgBenchmark6_Reference)*100/time);
 	}
 	if(cfgBenchmark7_Enable)
-	{// Benchmark 7	
+	{// Benchmark 7
 		srand(380843);
 		btDbvt								dbvt;
 		btAlignedObjectArray<btVector3>		rayorg;
@@ -1020,8 +1018,8 @@ void			btDbvt::benchmark()
 		raydir.resize(cfgBenchmark7_Iterations);
 		for(int i=0;i<rayorg.size();++i)
 		{
-			rayorg[i]=btDbvtBenchmark::RandVector3(cfgVolumeCenterScale*2);
-			raydir[i]=btDbvtBenchmark::RandVector3(cfgVolumeCenterScale*2);
+			rayorg[i]=btDbvtBenchmark::RandbtVector3(cfgVolumeCenterScale*2);
+			raydir[i]=btDbvtBenchmark::RandbtVector3(cfgVolumeCenterScale*2);
 		}
 		btDbvtBenchmark::RandTree(cfgVolumeCenterScale,cfgVolumeExentsBase,cfgVolumeExentsScale,cfgLeaves,dbvt);
 		dbvt.optimizeTopDown();
@@ -1039,7 +1037,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%),(%u r/s)\r\n",time,(time-cfgBenchmark7_Reference)*100/time,(rays*1000)/time);
 	}
 	if(cfgBenchmark8_Enable)
-	{// Benchmark 8	
+	{// Benchmark 8
 		srand(380843);
 		btDbvt								dbvt;
 		btDbvtBenchmark::RandTree(cfgVolumeCenterScale,cfgVolumeExentsBase,cfgVolumeExentsScale,cfgLeaves,dbvt);
@@ -1058,7 +1056,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%),(%u ir/s)\r\n",time,(time-cfgBenchmark8_Reference)*100/time,ir*1000/time);
 	}
 	if(cfgBenchmark9_Enable)
-	{// Benchmark 9	
+	{// Benchmark 9
 		srand(380843);
 		btDbvt										dbvt;
 		btAlignedObjectArray<const btDbvtNode*>	leaves;
@@ -1080,7 +1078,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%),(%u u/s)\r\n",time,(time-cfgBenchmark9_Reference)*100/time,up*1000/time);
 	}
 	if(cfgBenchmark10_Enable)
-	{// Benchmark 10	
+	{// Benchmark 10
 		srand(380843);
 		btDbvt										dbvt;
 		btAlignedObjectArray<const btDbvtNode*>	leaves;
@@ -1088,7 +1086,7 @@ void			btDbvt::benchmark()
 		vectors.resize(cfgBenchmark10_Iterations);
 		for(int i=0;i<vectors.size();++i)
 		{
-			vectors[i]=(btDbvtBenchmark::RandVector3()*2-btVector3(1,1,1))*cfgBenchmark10_Scale;
+			vectors[i]=(btDbvtBenchmark::RandbtVector3()*2-btVector3(1,1,1))*cfgBenchmark10_Scale;
 		}
 		btDbvtBenchmark::RandTree(cfgVolumeCenterScale,cfgVolumeExentsBase,cfgVolumeExentsScale,cfgLeaves,dbvt);
 		dbvt.optimizeTopDown();
@@ -1099,7 +1097,7 @@ void			btDbvt::benchmark()
 		for(int i=0;i<cfgBenchmark10_Passes;++i)
 		{
 			for(int j=0;j<cfgBenchmark10_Iterations;++j)
-			{			
+			{
 				const btVector3&	d=vectors[j];
 				btDbvtNode*		l=const_cast<btDbvtNode*>(leaves[rand()%cfgLeaves]);
 				btDbvtVolume		v=btDbvtVolume::FromMM(l->volume.Mins()+d,l->volume.Maxs()+d);
@@ -1111,13 +1109,13 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%),(%u u/s)\r\n",time,(time-cfgBenchmark10_Reference)*100/time,up*1000/time);
 	}
 	if(cfgBenchmark11_Enable)
-	{// Benchmark 11	
+	{// Benchmark 11
 		srand(380843);
 		btDbvt										dbvt;
 		btDbvtBenchmark::RandTree(cfgVolumeCenterScale,cfgVolumeExentsBase,cfgVolumeExentsScale,cfgLeaves,dbvt);
 		dbvt.optimizeTopDown();
 		printf("[11] optimize (incremental): ");
-		wallclock.reset();	
+		wallclock.reset();
 		for(int i=0;i<cfgBenchmark11_Passes;++i)
 		{
 			dbvt.optimizeIncremental(cfgBenchmark11_Iterations);
@@ -1127,7 +1125,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%),(%u o/s)\r\n",time,(time-cfgBenchmark11_Reference)*100/time,op/time*1000);
 	}
 	if(cfgBenchmark12_Enable)
-	{// Benchmark 12	
+	{// Benchmark 12
 		srand(380843);
 		btAlignedObjectArray<btDbvtVolume>	volumes;
 		btAlignedObjectArray<bool>				results;
@@ -1153,7 +1151,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%)\r\n",time,(time-cfgBenchmark12_Reference)*100/time);
 	}
 	if(cfgBenchmark13_Enable)
-	{// Benchmark 13	
+	{// Benchmark 13
 		srand(380843);
 		btDbvt								dbvt;
 		btAlignedObjectArray<btVector3>		vectors;
@@ -1161,12 +1159,12 @@ void			btDbvt::benchmark()
 		vectors.resize(cfgBenchmark13_Iterations);
 		for(int i=0;i<vectors.size();++i)
 		{
-			vectors[i]=(btDbvtBenchmark::RandVector3()*2-btVector3(1,1,1)).normalized();
+			vectors[i]=(btDbvtBenchmark::RandbtVector3()*2-btVector3(1,1,1)).normalized();
 		}
 		btDbvtBenchmark::RandTree(cfgVolumeCenterScale,cfgVolumeExentsBase,cfgVolumeExentsScale,cfgLeaves,dbvt);
 		dbvt.optimizeTopDown();
 		printf("[13] culling(OCL+fullsort): ");
-		wallclock.reset();	
+		wallclock.reset();
 		for(int i=0;i<cfgBenchmark13_Iterations;++i)
 		{
 			static const btScalar	offset=0;
@@ -1178,7 +1176,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%),(%u t/s)\r\n",time,(time-cfgBenchmark13_Reference)*100/time,(t*1000)/time);
 	}
 	if(cfgBenchmark14_Enable)
-	{// Benchmark 14	
+	{// Benchmark 14
 		srand(380843);
 		btDbvt								dbvt;
 		btAlignedObjectArray<btVector3>		vectors;
@@ -1186,13 +1184,13 @@ void			btDbvt::benchmark()
 		vectors.resize(cfgBenchmark14_Iterations);
 		for(int i=0;i<vectors.size();++i)
 		{
-			vectors[i]=(btDbvtBenchmark::RandVector3()*2-btVector3(1,1,1)).normalized();
+			vectors[i]=(btDbvtBenchmark::RandbtVector3()*2-btVector3(1,1,1)).normalized();
 		}
 		btDbvtBenchmark::RandTree(cfgVolumeCenterScale,cfgVolumeExentsBase,cfgVolumeExentsScale,cfgLeaves,dbvt);
 		dbvt.optimizeTopDown();
 		policy.m_nodes.reserve(cfgLeaves);
 		printf("[14] culling(OCL+qsort): ");
-		wallclock.reset();	
+		wallclock.reset();
 		for(int i=0;i<cfgBenchmark14_Iterations;++i)
 		{
 			static const btScalar	offset=0;
@@ -1205,7 +1203,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%),(%u t/s)\r\n",time,(time-cfgBenchmark14_Reference)*100/time,(t*1000)/time);
 	}
 	if(cfgBenchmark15_Enable)
-	{// Benchmark 15	
+	{// Benchmark 15
 		srand(380843);
 		btDbvt								dbvt;
 		btAlignedObjectArray<btVector3>		vectors;
@@ -1213,13 +1211,13 @@ void			btDbvt::benchmark()
 		vectors.resize(cfgBenchmark15_Iterations);
 		for(int i=0;i<vectors.size();++i)
 		{
-			vectors[i]=(btDbvtBenchmark::RandVector3()*2-btVector3(1,1,1)).normalized();
+			vectors[i]=(btDbvtBenchmark::RandbtVector3()*2-btVector3(1,1,1)).normalized();
 		}
 		btDbvtBenchmark::RandTree(cfgVolumeCenterScale,cfgVolumeExentsBase,cfgVolumeExentsScale,cfgLeaves,dbvt);
 		dbvt.optimizeTopDown();
 		policy.m_nodes.reserve(cfgLeaves);
 		printf("[15] culling(KDOP+qsort): ");
-		wallclock.reset();	
+		wallclock.reset();
 		for(int i=0;i<cfgBenchmark15_Iterations;++i)
 		{
 			static const btScalar	offset=0;
@@ -1233,7 +1231,7 @@ void			btDbvt::benchmark()
 		printf("%u ms (%i%%),(%u t/s)\r\n",time,(time-cfgBenchmark15_Reference)*100/time,(t*1000)/time);
 	}
 	if(cfgBenchmark16_Enable)
-	{// Benchmark 16	
+	{// Benchmark 16
 		srand(380843);
 		btDbvt								dbvt;
 		btAlignedObjectArray<btDbvtNode*>	batch;

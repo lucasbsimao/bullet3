@@ -10,22 +10,18 @@ SET(BulletDynamics_SRCS
 	ConstraintSolver/btGearConstraint.cpp
 	ConstraintSolver/btGeneric6DofConstraint.cpp
 	ConstraintSolver/btGeneric6DofSpringConstraint.cpp
-	ConstraintSolver/btGeneric6DofSpring2Constraint.cpp
 	ConstraintSolver/btHinge2Constraint.cpp
 	ConstraintSolver/btHingeConstraint.cpp
 	ConstraintSolver/btPoint2PointConstraint.cpp
 	ConstraintSolver/btSequentialImpulseConstraintSolver.cpp
-	ConstraintSolver/btNNCGConstraintSolver.cpp
 	ConstraintSolver/btSliderConstraint.cpp
 	ConstraintSolver/btSolve2LinearConstraint.cpp
 	ConstraintSolver/btTypedConstraint.cpp
 	ConstraintSolver/btUniversalConstraint.cpp
 	Dynamics/btDiscreteDynamicsWorld.cpp
-	Dynamics/btDiscreteDynamicsWorldMt.cpp
-	Dynamics/btSimulationIslandManagerMt.cpp
 	Dynamics/btRigidBody.cpp
 	Dynamics/btSimpleDynamicsWorld.cpp
-#	Dynamics/Bullet-C-API.cpp
+	Dynamics/Bullet-C-API.cpp
 	Vehicle/btRaycastVehicle.cpp
 	Vehicle/btWheelInfo.cpp
 	Featherstone/btMultiBody.cpp
@@ -34,12 +30,9 @@ SET(BulletDynamics_SRCS
 	Featherstone/btMultiBodyJointLimitConstraint.cpp
 	Featherstone/btMultiBodyConstraint.cpp
 	Featherstone/btMultiBodyPoint2Point.cpp
-	Featherstone/btMultiBodyFixedConstraint.cpp
-	Featherstone/btMultiBodySliderConstraint.cpp
 	Featherstone/btMultiBodyJointMotor.cpp
 	MLCPSolvers/btDantzigLCP.cpp
 	MLCPSolvers/btMLCPSolver.cpp
-	MLCPSolvers/btLemkeAlgorithm.cpp
 )
 
 SET(Root_HDRS
@@ -55,13 +48,11 @@ SET(ConstraintSolver_HDRS
 	ConstraintSolver/btGearConstraint.h
 	ConstraintSolver/btGeneric6DofConstraint.h
 	ConstraintSolver/btGeneric6DofSpringConstraint.h
-	ConstraintSolver/btGeneric6DofSpring2Constraint.h
 	ConstraintSolver/btHinge2Constraint.h
 	ConstraintSolver/btHingeConstraint.h
 	ConstraintSolver/btJacobianEntry.h
 	ConstraintSolver/btPoint2PointConstraint.h
 	ConstraintSolver/btSequentialImpulseConstraintSolver.h
-	ConstraintSolver/btNNCGConstraintSolver.h
 	ConstraintSolver/btSliderConstraint.h
 	ConstraintSolver/btSolve2LinearConstraint.h
 	ConstraintSolver/btSolverBody.h
@@ -72,8 +63,6 @@ SET(ConstraintSolver_HDRS
 SET(Dynamics_HDRS
 	Dynamics/btActionInterface.h
 	Dynamics/btDiscreteDynamicsWorld.h
-	Dynamics/btDiscreteDynamicsWorldMt.h
-	Dynamics/btSimulationIslandManagerMt.h
 	Dynamics/btDynamicsWorld.h
 	Dynamics/btSimpleDynamicsWorld.h
 	Dynamics/btRigidBody.h
@@ -95,8 +84,6 @@ SET(Featherstone_HDRS
 	Featherstone/btMultiBodyJointLimitConstraint.h
 	Featherstone/btMultiBodyConstraint.h
 	Featherstone/btMultiBodyPoint2Point.h
-	Featherstone/btMultiBodyFixedConstraint.h
-	Featherstone/btMultiBodySliderConstraint.h
 	Featherstone/btMultiBodyJointMotor.h
 )
 
@@ -106,9 +93,7 @@ SET(MLCPSolvers_HDRS
 	MLCPSolvers/btMLCPSolver.h
 	MLCPSolvers/btMLCPSolverInterface.h
 	MLCPSolvers/btPATHSolver.h
-	MLCPSolvers/btSolveProjectedGaussSeidel.h
-	MLCPSolvers/btLemkeSolver.h
-	MLCPSolvers/btLemkeAlgorithm.h
+	MLCPSolvers/btSolveProjectedGaussSeidel.h	
 )
 
 SET(Character_HDRS
